@@ -1,0 +1,4 @@
+# the cron job to periodically update the hosts file
+#
+# sec   min day mon week cmd
+*	/6	*	*	*	"/mnt/d/workspace/source/whiteear.github.com/update.hosts/uphosts"

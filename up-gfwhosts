@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# free to copy and distribute this repo and source files.
+#
+# author: cyliu7@gmail.com
+#
+
+REPO="https://github.com/racaljk/hosts.git"
+
+function check-repo {
+    [ ! -d hosts ] && return 1
+    return 0
+}
+
+if [ ! -d hosts ];then
+    # clone the repo
+    echo 'checking out hosts git repo ... please wait ...'
+    git clone $REPO &>/dev/null
+    [ $? != 0 ] && echo "ERROR: clone repo failed." && exit -1;
+
+    # init the last day
+    touch lastday
+    echo 0 > lastday
+fi
+
+echo 'updating hosts git repo ...'
+cd hosts
+git pull &>/dev/null
+[ $? != 0 ] && echo "ERROR: update the repo failed." && exit -1;
+
+# get hosts file latest updated time
+lastday=`cat lastday`
+latest=`git log --date=short hosts | grep -Pom1 "\d+-\d+-\d+" | tr -d '-'`
+if [ $lastday -lt $latest ];then
+    echo 'hosts updated in github. update local copy.'
+    cp hosts $HROOT/hosts.d/gfw.hosts
+    echo $latest > lastday
+fi
